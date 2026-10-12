@@ -1,6 +1,7 @@
 # Data is large and downloadable; keep it out of git
 data/raw/*
 !data/raw/.gitkeep
+*.csv
 *.nc
 *.grib
 
