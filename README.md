@@ -5,17 +5,16 @@ This project uses 20 years of hourly reanalysis data to quantify low-wind events
 
 ## Key findings
 
-- **Frequency:** Periods where a wind turbine produces less than 10% of its capacity for at least two days occur about 16 times per year (range 11–23 across years).
-- **Season:** They are most common in July, Augut and Sepetember because the winds are calmer during summer.
+- **Frequency:** Periods where a wind turbine produces less than 10% of its rated capacity for at least two days occur about 16 times per year (range 11–23 across years).
+- **Season:** They are most common in July, August and September likely because weaker storm activity in summer.
 - **Duration:** A typical event lasts 66 hours (2 days, 18 hours); the longest lasted 11 days (January 2017). An event of 9 days occurs roughly once every 10 years.
-
-![Low-wind events at Hamburg](figures/low_wind.png)
 
 ## Data
 
 - ERA5 hourly reanalysis (ECMWF / Copernicus), 100 m wind components
   u100 and v100, 2005–2024
-- Grid point nearest Hamburg: [lat]°N, [lon]°E
+  (Contains modified Copernicus Climate Change Service information (2025). Hersbach et al. (2020), ERA5 hourly data on single levels, Copernicus Climate Data Store.)
+- Grid point nearest Hamburg: [53.5]°N, [10]°E
 - Raw data is not included in this repository (download from the
   Copernicus Climate Data Store).
 
@@ -29,7 +28,6 @@ This project uses 20 years of hourly reanalysis data to quantify low-wind events
 5. Empirical return periods of the longest event per year.
 6. Sensitivity of results to the event definition (threshold and minimum duration).
 
-Definitions and details: [docs/methods.md](docs/methods.md)
 
 ## Limitations
 
@@ -43,7 +41,6 @@ Definitions and details: [docs/methods.md](docs/methods.md)
     notebooks/01_low_wind_events.ipynb   analysis of low-wind events
     src/windtools.py                     reusable functions (power curve, event detection)
     figures/                             saved figures
-    docs/methods.md                      definitions and methods
 
 ## How to run
 
