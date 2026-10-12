@@ -1,0 +1,16 @@
+# Data is large and downloadable; keep it out of git
+data/raw/*
+!data/raw/.gitkeep
+*.nc
+*.grib
+
+# Generated outputs (figures ARE committed so the README can show them)
+results/
+
+# Python / editors
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.vscode/
+.DS_Store
