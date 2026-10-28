@@ -44,6 +44,35 @@ def add_capacity_factor(df, **curve_kwargs):
     return df
 
 
+def p_values(annual_energy, horizon_years=1):
+    """Calculate P50, sample standard deviation, and horizon-adjusted P90.
+
+    Returns a Series containing energy values in the input units and the
+    standard deviation and P90 as percentages of P50.
+    """
+    if horizon_years < 1:
+        raise ValueError("horizon_years must be at least 1")
+
+    annual_energy = pd.Series(annual_energy).dropna()
+    if len(annual_energy) < 2:
+        raise ValueError("annual_energy must contain at least two valid values")
+
+    p50 = annual_energy.mean()
+    if p50 == 0:
+        raise ValueError("P50 must be non-zero to calculate percentages of P50")
+
+    sigma_annual = annual_energy.std(ddof=1)
+    sigma = sigma_annual / np.sqrt(horizon_years)   # spread of the N-year average
+    p90 = p50 - 1.282 * sigma
+    return pd.Series({
+        "p50": p50,
+        "sigma": sigma,
+        "sigma_pct_p50": sigma / p50 * 100,
+        "p90": p90,
+        "p90_pct_p50": p90 / p50 * 100,
+    })
+
+
 def find_low_wind_events(cf, threshold=0.10, min_hours=48):
     """Find consecutive low-capacity-factor events in a time-indexed Series."""
     below = cf.lt(threshold) & cf.notna()
