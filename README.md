@@ -1,5 +1,7 @@
 # Wind energy variability and low-wind risk at Hamburg (ERA5, 2005–2025)
 
+[![Tests](https://github.com/AbishaMary/era5-wind-hamburg/actions/workflows/tests.yml/badge.svg)](https://github.com/AbishaMary/era5-wind-hamburg/actions/workflows/tests.yml)
+
 How often does wind power "go quiet" near Hamburg, how much does annual
 wind energy vary, and what yield can be relied on? This project uses
 21 years of hourly reanalysis data to quantify low-wind events and
