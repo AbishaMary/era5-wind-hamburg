@@ -61,3 +61,32 @@ def test_annual_energy_is_nan_for_year_with_missing_power():
 
     assert np.isnan(energy.loc[2020])
     assert energy.loc[2021] == pytest.approx(8760)
+
+
+def test_wind_direction_northerly_is_0_or_360():
+    # u=0, v=-5 blows towards the south, so the wind comes from the north.
+    direction = wt.wind_direction(0.0, -5.0)
+
+    assert min(direction, 360 - direction) == pytest.approx(0, abs=1e-9)
+
+
+@pytest.mark.parametrize(
+    "u, v, expected_degrees",
+    [
+        (-5.0, 0.0, 90),   # blowing west, so from the east
+        (0.0, 5.0, 180),   # blowing north, so from the south
+        (5.0, 0.0, 270),   # blowing east, so from the west
+    ],
+)
+def test_wind_direction_cardinal_points(u, v, expected_degrees):
+    assert wt.wind_direction(u, v) == pytest.approx(expected_degrees)
+
+
+def test_wind_direction_random_values_stay_between_0_and_360():
+    rng = np.random.default_rng(42)
+    u = rng.uniform(-30, 30, size=10_000)
+    v = rng.uniform(-30, 30, size=10_000)
+
+    direction = wt.wind_direction(u, v)
+
+    assert np.all((direction >= 0) & (direction <= 360))

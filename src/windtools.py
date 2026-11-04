@@ -39,6 +39,22 @@ def power_curve(ws, cut_in=3.0, rated=12.0, cut_out=25.0):
     return np.select(conditions, values, default=np.nan)   # NaN meets no condition
 
 
+def wind_direction(u, v):
+    """Meteorological wind direction: where the wind comes from.
+
+    Parameters
+    ----------
+    u, v : float, array or pandas Series
+        Eastward and northward wind components (m/s).
+
+    Returns
+    -------
+    Direction in degrees clockwise from north, between 0 and 360
+    (0 = from the north, 90 = from the east), with the same type as the input.
+    """
+    return np.degrees(np.arctan2(-u, -v)) % 360
+
+
 def add_capacity_factor(df, **curve_kwargs):
     df = df.copy()
     df["cf"] = power_curve(df["ws100"], **curve_kwargs)
