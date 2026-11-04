@@ -90,3 +90,31 @@ def test_wind_direction_random_values_stay_between_0_and_360():
     direction = wt.wind_direction(u, v)
 
     assert np.all((direction >= 0) & (direction <= 360))
+
+
+@pytest.mark.parametrize(
+    "year, expected_hours",
+    [
+        (2021, 8760),
+        (2020, 8784),  # leap year
+    ],
+)
+def test_complete_years_keeps_full_year(year, expected_hours):
+    hours = pd.date_range(f"{year}-01-01 00:00", f"{year}-12-31 23:00", freq="h")
+    df = pd.DataFrame({"cf": 0.5}, index=hours)
+
+    result = wt.complete_years(df)
+
+    assert len(result) == expected_hours
+    assert set(result.index.year) == {year}
+
+
+def test_complete_years_removes_year_with_only_1000_hours():
+    full_year = pd.date_range("2021-01-01 00:00", "2021-12-31 23:00", freq="h")
+    partial_year = pd.date_range("2022-01-01 00:00", periods=1000, freq="h")
+    df = pd.DataFrame({"cf": 0.5}, index=full_year.append(partial_year))
+
+    result = wt.complete_years(df)
+
+    assert set(result.index.year) == {2021}
+    assert len(result) == 8760
