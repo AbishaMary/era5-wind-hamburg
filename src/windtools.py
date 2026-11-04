@@ -1,10 +1,14 @@
-"""Shared helpers: load ERA5 100 m wind, compute speed/direction, convert to capacity factor."""
+"""Shared helpers for wind energy analysis.
 
-from pathlib import Path
+- power_curve, add_capacity_factor: wind speed to capacity factor
+- wind_direction: meteorological wind direction from u and v components
+- annual_energy, p_values: energy per calendar year and P50/P90 statistics
+- find_low_wind_events: consecutive low-capacity-factor periods
+- complete_years: remove years with too few hourly values
+"""
 
 import numpy as np
 import pandas as pd
-import xarray as xr
 
 
 def power_curve(ws, cut_in=3.0, rated=12.0, cut_out=25.0):
