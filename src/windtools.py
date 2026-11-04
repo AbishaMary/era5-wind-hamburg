@@ -44,6 +44,34 @@ def add_capacity_factor(df, **curve_kwargs):
     return df
 
 
+def annual_energy(power):
+    """Calculate energy per calendar year from a power time series.
+
+    Parameters
+    ----------
+    power : pandas Series
+        Power in kW, with a sorted, duplicate-free DatetimeIndex.
+
+    Returns
+    -------
+    pandas Series of energy in kWh, indexed by year.
+
+    The time step is the median spacing of the index. Each value counts for one
+    time step, so missing timestamps and NaN values add no energy.
+    """
+    if not isinstance(power.index, pd.DatetimeIndex):
+        raise TypeError("power must have a DatetimeIndex")
+    if len(power) < 2:
+        raise ValueError("power must contain at least two values to infer the time step")
+    if not power.index.is_monotonic_increasing or not power.index.is_unique:
+        raise ValueError("power index must be sorted and contain no duplicates")
+
+    step_hours = power.index.to_series().diff().median() / pd.Timedelta(hours=1)
+    energy = (power * step_hours).groupby(power.index.year).sum()
+    energy.index.name = "year"
+    return energy.rename("energy_kwh")
+
+
 def p_values(annual_energy, horizon_years=1):
     """Calculate P50, sample standard deviation, and horizon-adjusted P90.
 
