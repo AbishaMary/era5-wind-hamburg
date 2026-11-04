@@ -28,7 +28,7 @@ planning, project financing and power trading.
 ## Data
 
 - ERA5 hourly reanalysis (ECMWF / Copernicus), 100 m wind components
-  u100 and v100, 2005–2024
+  u100 and v100, 2005–2025
   (Contains modified Copernicus Climate Change Service information (2025). Hersbach et al. (2020), ERA5 hourly data on single levels, Copernicus Climate Data Store.)
 - Grid point nearest Hamburg: [53.5]°N, [10]°E
 - Raw data is not included in this repository (download from the
@@ -47,7 +47,7 @@ planning, project financing and power trading.
 6. Sensitivity of results to the event definition (threshold and minimum duration).
 
 **Notebook 2 – Yield variability**
-1. Annual energy for a 5 MW turbine from mean capacity factor.
+1. Annual energy for a 5 MW turbine by summing hourly power, for complete years only.
 2. P50 (mean) and P90 for 1- and 10-year horizons (normal assumption,
    checked with a Q–Q plot and empirical percentile).
 3. Energy–wind speed elasticity from a log–log fit.
@@ -62,7 +62,7 @@ planning, project financing and power trading.
 - ERA5 (~30 km grid) tends to underestimate onshore wind speeds;
   absolute capacity factors are indicative, relative patterns more robust.
 - Generic power curve; no air-density correction, wake or availability losses.
-- 20 years limits return-period estimates to roughly 10–20 years.
+- 21 years limits return-period estimates to roughly 10–20 years.
 
 **Notebook 2 – Yield variability**
 
@@ -74,8 +74,9 @@ planning, project financing and power trading.
 ## Repository structure
 
 notebooks/01_low_wind_events.ipynb     low-wind event analysis
-notebooks/02_yield_variability.ipynb   yield variability and P50/P90
+notebooks/02_wind_yield_variability.ipynb   yield variability and P50/P90
 src/windtools.py                       reusable functions
+tests/test_windtools.py                pytest tests for windtools
 figures/                               saved figures
 requirements.txt                       Python dependencies
 
@@ -86,6 +87,24 @@ requirements.txt                       Python dependencies
     pip install -r requirements.txt
 
 Place the ERA5 NetCDF file in `data/raw/` and run the notebook.
+
+## Tests
+
+With the virtual environment activated, run:
+
+    python -m pytest
+
+The tests in `tests/test_windtools.py` use small synthetic data to check
+physical rules:
+
+- **Power limits:** output is zero below cut-in and at or above cut-out,
+  and full power from rated speed up to cut-out.
+- **Leap years:** a constant 1 kW gives 8784 kWh in 2020 and 8760 kWh in 2021,
+  and full years of either length are kept while a 1000-hour year is removed.
+- **Missing data:** NaN wind speed gives NaN output, NaN hours do not count
+  towards low-wind events, and a year with a NaN power value has NaN energy.
+- **Wind direction:** results follow the meteorological convention (where
+  the wind comes from, clockwise from north) and stay between 0 and 360 degrees.
 
 ## Next steps
 

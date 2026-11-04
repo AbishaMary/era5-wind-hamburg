@@ -5,3 +5,4 @@ netCDF4
 dask
 scipy
 matplotlib
+pytest
