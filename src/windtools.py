@@ -143,7 +143,7 @@ def complete_years(df, min_coverage=0.95):
     """Keep only calendar years with at least `min_coverage` of hourly data present."""
     counts = df.groupby(df.index.year).size()
     expected = pd.Series(
-        [8784 if pd.Timestamp(year=y, month=12, day=31).dayofyear == 366 else 8760 for y in counts.index],
+        [8784 if pd.Timestamp(year=y, month=12, day=31).day_of_year == 366 else 8760 for y in counts.index],
         index=counts.index,
     )
     good = counts.index[counts / expected >= min_coverage]
