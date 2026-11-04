@@ -19,7 +19,8 @@ def power_curve(ws, cut_in=3.0, rated=12.0, cut_out=25.0):
 
     Returns
     -------
-    numpy array of capacity factor values between 0 and 1.
+    numpy array of capacity factor values between 0 and 1, with NaN where the
+    wind speed is NaN.
     """
     ws = np.asarray(ws, dtype=float)
 
@@ -35,7 +36,7 @@ def power_curve(ws, cut_in=3.0, rated=12.0, cut_out=25.0):
         1.0,
         0.0,
     ]
-    return np.select(conditions, values)
+    return np.select(conditions, values, default=np.nan)   # NaN meets no condition
 
 
 def add_capacity_factor(df, **curve_kwargs):
@@ -54,10 +55,11 @@ def annual_energy(power):
 
     Returns
     -------
-    pandas Series of energy in kWh, indexed by year.
+    pandas Series of energy in kWh, indexed by year. A year containing a NaN
+    power value is NaN.
 
     The time step is the median spacing of the index. Each value counts for one
-    time step, so missing timestamps and NaN values add no energy.
+    time step, so timestamps absent from the index add no energy.
     """
     if not isinstance(power.index, pd.DatetimeIndex):
         raise TypeError("power must have a DatetimeIndex")
@@ -67,7 +69,9 @@ def annual_energy(power):
         raise ValueError("power index must be sorted and contain no duplicates")
 
     step_hours = power.index.to_series().diff().median() / pd.Timedelta(hours=1)
-    energy = (power * step_hours).groupby(power.index.year).sum()
+    energy = (power * step_hours).groupby(power.index.year).apply(
+        lambda values: values.sum(skipna=False)
+    )
     energy.index.name = "year"
     return energy.rename("energy_kwh")
 
